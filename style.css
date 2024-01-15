@@ -1,6 +1,38 @@
-body, html{
+body,
+html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+}
+
+.square {
+    border:1px solid black;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:0.5px;
+}
+
+.choice {
+    display: none;
+    flex-direction: column;
+}
+
+.winnerContainer {
+    display: none;
 }
