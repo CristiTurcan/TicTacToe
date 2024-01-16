@@ -7,7 +7,7 @@ html {
 }
 
 .square {
-    border:1px solid black;
+    border: 1px solid black;
     height: 50px;
     width: 50px;
     display: flex;
@@ -25,7 +25,7 @@ html {
 .gameboard {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap:0.5px;
+    gap: 0.5px;
 }
 
 .choice {
@@ -35,4 +35,18 @@ html {
 
 .winnerContainer {
     display: none;
+}
+
+.enterName {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#playerForm {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

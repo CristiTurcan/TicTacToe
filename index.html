@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="script.js" defer></script>
     <title>TicTacToe</title>
 </head>
+
 <body>
     <div class="container">
         <div class="gameboard">
@@ -24,12 +26,23 @@
             <button class="one-player">1 player</button>
             <button class="two-player">2 player</button>
         </div>
-        <div class="choice">
-            <span class="choiceText"></span>
-            <button class="X">X</button>
-            <button class="O">0</button>
+        <div class="playerFormContainer">
+            <form id="playerForm">
+                <div class="inputContainer">
+                    <label for="player1"></label>
+                    <input type="text" id="player1" name="player1" placeholder="Enter player 1 name">
+                    <label class="player2input" for="player2"></label>
+                    <input class="player2input" type="text" id="player2" name="player2" placeholder="Enter player 2 name">
+                </div>
+
+                <div class="permChoiceBtn">
+                    <input type="submit" value="X">
+                    <input type="submit" value="0">
+                </div>
+            </form>
         </div>
         <div class="winnerContainer"><span class="winnerText"></span></div>
     </div>
 </body>
+
 </html>

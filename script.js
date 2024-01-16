@@ -3,14 +3,6 @@ const gameboard = (function () {
     let gameboard = Array(9);
     const choices = ['X', '0'];
 
-    const printBoard = () => {
-        for (i = 0; i < 9; i++) {
-            console.log(gameboard[i] + gameboard[i + 1] + gameboard[i + 2]);
-            i = i + 2;
-        }
-        console.log("\n");
-    }
-
     const resetBoard = () => {
         gameboard = Array(9).fill('');
     }
@@ -43,7 +35,7 @@ const gameboard = (function () {
     const getChoice = (pos) => gameboard[pos];
     const getAllChoices = () => choices;
 
-    return { printBoard, resetBoard, filledBoard, putChoice, getChoice, getAllChoices };
+    return { resetBoard, filledBoard, putChoice, getChoice, getAllChoices };
 })();
 
 function createPlayer() {
@@ -171,17 +163,16 @@ const gameController = (function (gameboard) {
 // this function is responsible of DOM logic
 function manageGameboard(gameboard, gameController) {
     const squares = document.querySelectorAll('.square');
-    const choicesBtn = document.querySelector('.choice');
-    const choiceText = document.querySelector('.choiceText');
-    const choiceX = document.querySelector('.X');
-    const choice0 = document.querySelector('.O');
     const gamemodeBtn = document.querySelector('.gamemode');
     const onePlayer = document.querySelector('.one-player');
     const twoPlayer = document.querySelector('.two-player');
     const winnerContainer = document.querySelector('.winnerContainer');
     const winnerText = document.querySelector('.winnerText');
-
-    choiceText.textContent = `${gameController.getPlayerChoice(1)} choose`;
+    const playerFormContainer = document.querySelector('.playerFormContainer');
+    const playerForm = document.querySelector('#playerForm');
+    const player1Name = document.querySelector('#player1');
+    const player2Name = document.querySelector('#player2');
+    const inputContainer = document.querySelectorAll('.inputContainer');
 
     let positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     let gameOver = 0;
@@ -195,27 +186,32 @@ function manageGameboard(gameboard, gameController) {
         squares[pos].textContent = gameboard.getChoice(pos);
     };
 
-    const getUserChoice = () => {
-        choiceX.addEventListener('click', () => {
-            gameController.createPlayers('cristi', 'andrei', 'X');
-            choicesBtn.style.display = 'none';
-        });
-        choice0.addEventListener('click', () => {
-            gameController.createPlayers('cristi', 'andrei', '0');
-            choicesBtn.style.display = 'none';
+    const setUserChoice = (choice) => {
+        gameController.createPlayers(player1Name.value, player2Name.value, choice);
+    };
+
+    const getPlayerNames = () => {
+        playerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            setUserChoice(e.submitter.value);
+            playerFormContainer.style.display = 'none';
         });
     };
 
     const getGamemodeSelection = () => {
         onePlayer.addEventListener('click', () => {
             gamemodeBtn.style.display = 'none';
-            choicesBtn.style.display = 'flex';
+            playerForm.style.display = 'flex';
+            //no names needed for one player
+            inputContainer.forEach((node) => {
+                node.style.display = 'none';
+            })
             gameController.setGamemode(0);
 
         });
         twoPlayer.addEventListener('click', () => {
             gamemodeBtn.style.display = 'none';
-            choicesBtn.style.display = 'flex';
+            playerForm.style.display = 'flex';
             gameController.setGamemode(1);
         });
     }
@@ -225,11 +221,31 @@ function manageGameboard(gameboard, gameController) {
         return positions[pos];
     }
 
+    const getWinningText = (winningPosition) => {
+        if (gameController.getGamemode() === 0) {
+            winnerText.textContent = `You won`;
+        }
+        else if (gameController.getGamemode() === 1) {
+            winnerText.textContent = `Game won by ${gameController.getWinningPlayerByPosition(winningPosition)}`;
+        }
+        winnerContainer.style.display = 'block'
+    }
+
+    const getWinner = () => {
+        if ((winningPosition = gameController.checkResult()) !== 0) {
+            gameOver = 1;
+            getWinningText(winningPosition);
+            return 1;
+        }
+        return 0;
+    }
+
     const playRound = () => {
         let sw = 0;
 
-        getUserChoice();
+        // setUserChoice();
         getGamemodeSelection();
+        getPlayerNames();
 
         squares.forEach((square) => {
             square.addEventListener('click', (e) => {
@@ -251,18 +267,15 @@ function manageGameboard(gameboard, gameController) {
                         insertChoiceInSquare(pos, gameController.getPlayerChoice(2));
                         sw = 0;
                     }
+                    getWinner();
                 } else if (gameController.getGamemode() === 0) {
                     insertChoiceInSquare(pos, gameController.getPlayerChoice(1));
+                    if (getWinner()) return;
                     insertChoiceInSquare(getRandomAvailablePosition(), gameController.getPlayerChoice(2));
+                    if (getWinner()) return;
 
                 } else {
                     alert("No gamemode");
-                }
-
-                if ((winningPosition = gameController.checkResult()) !== 0) {
-                    gameOver = 1;
-                    winnerText.textContent = `Game won by ${gameController.getWinningPlayerByPosition(winningPosition)}`;
-                    winnerContainer.style.display = 'block';
                 }
             });
         });
@@ -272,3 +285,20 @@ function manageGameboard(gameboard, gameController) {
 
 mg = new manageGameboard(gameboard, gameController);
 mg.playRound();
+
+/* 
+DE FACUT:
+
+-pus reset button si home button (sau next round si reset game - mai bine spus)
+-pus scor
+
+ERROR:
+
+-in one player: - sa se verifice prima data pozitiile de X dupa pozitiile de 0
+                  sau sa se verifice la fiecare iteratie, nu la fiecare 2
+                - cred ca este rezolvat ^
+                
+                -cand mai e doar un patrat liber si pun X da eroare
+
+-trebuie schimbat getWinningText - sa faca diferenta dintre You Won / Lost in one player
+*/
