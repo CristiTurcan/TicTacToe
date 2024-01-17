@@ -28,20 +28,8 @@ html {
     gap: 0.5px;
 }
 
-.choice {
-    display: none;
-    flex-direction: column;
-}
-
 .winnerContainer {
     display: none;
-}
-
-.enterName {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
 #playerForm {
@@ -49,4 +37,12 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.score {
+    display: none;
+}
+
+.actionBtn {
+    display: none;
 }

@@ -11,6 +11,7 @@
 
 <body>
     <div class="container">
+        <div class="score"><span class="scoreText"></span></div>
         <div class="gameboard">
             <div class="square" data-number="0"></div>
             <div class="square" data-number="1"></div>
@@ -30,9 +31,9 @@
             <form id="playerForm">
                 <div class="inputContainer">
                     <label for="player1"></label>
-                    <input type="text" id="player1" name="player1" placeholder="Enter player 1 name">
-                    <label class="player2input" for="player2"></label>
-                    <input class="player2input" type="text" id="player2" name="player2" placeholder="Enter player 2 name">
+                    <input class="addRequired" type="text" id="player1" name="player1" placeholder="Enter player 1 name">
+                    <label for="player2"></label>
+                    <input class="addRequired" type="text" id="player2" name="player2" placeholder="Enter player 2 name">
                 </div>
 
                 <div class="permChoiceBtn">
@@ -42,6 +43,10 @@
             </form>
         </div>
         <div class="winnerContainer"><span class="winnerText"></span></div>
+        <div class="actionBtn">
+            <button class="nextRoundBtn">Next Round</button>
+            <button class="homeBtn">Home</button>
+        </div>
     </div>
 </body>
 

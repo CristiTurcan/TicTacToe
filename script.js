@@ -41,6 +41,10 @@ const gameboard = (function () {
 function createPlayer() {
     let name;
     let choice;
+    let score = 0;
+
+    const incrementScore = () => { score++ };
+    const getScore = () => score;
 
     const setName = (givenName) => {
         if (name === undefined)
@@ -54,7 +58,7 @@ function createPlayer() {
     };
     const getChoice = () => choice;
 
-    return { setName, getName, setChoice, getChoice };
+    return { setName, getName, setChoice, getChoice, incrementScore, getScore };
 }
 
 const gameController = (function (gameboard) {
@@ -75,6 +79,7 @@ const gameController = (function (gameboard) {
 
     const createPlayers = (name1, name2, firstChoice) => {
         if (gamemode === 0) {
+            name1 = 'User';
             name2 = 'Computer';
         }
 
@@ -156,7 +161,25 @@ const gameController = (function (gameboard) {
             alert("Error in getPlayerChoice");
     };
 
-    return { createPlayers, checkResult, setGamemode, getGamemode, getPlayerChoice, getWinningPlayerByPosition };
+    const setPlayerScore = (name) => {
+        if (player1.getName() === name)
+            return player1.incrementScore();
+        else if (player2.getName() === name)
+            return player2.incrementScore();
+        else
+            alert("Error in setPlayerScore - playerNo not good");
+    }
+
+    const getPlayerScore = (playerNo) => {
+        if (playerNo === 1)
+            return player1.getScore();
+        else if (playerNo === 2)
+            return player2.getScore();
+        else
+            alert("Error in getPlayerScore - playerNo not good");
+    }
+
+    return { createPlayers, checkResult, setGamemode, getGamemode, getPlayerChoice, getWinningPlayerByPosition, setPlayerScore, getPlayerScore };
 })(gameboard);
 
 
@@ -173,9 +196,19 @@ function manageGameboard(gameboard, gameController) {
     const player1Name = document.querySelector('#player1');
     const player2Name = document.querySelector('#player2');
     const inputContainer = document.querySelectorAll('.inputContainer');
+    const addRequired = document.querySelectorAll('.addRequired');
+    const score = document.querySelector('.score');
+    const scoreText = document.querySelector('.scoreText');
+    const actionBtn = document.querySelector('.actionBtn');
+    const nextRoundBtn = document.querySelector('.nextRoundBtn');
+    const homeBtn = document.querySelector('.homeBtn');
 
     let positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     let gameOver = 0;
+
+    const updateScore = () => {
+        scoreText.textContent = `${gameController.getPlayerScore(1)} - ${gameController.getPlayerScore(2)}`;
+    }
 
     const insertChoiceInSquare = (pos, choice) => {
         pos = parseInt(pos);
@@ -195,6 +228,9 @@ function manageGameboard(gameboard, gameController) {
             e.preventDefault();
             setUserChoice(e.submitter.value);
             playerFormContainer.style.display = 'none';
+            score.style.display = 'block';
+            actionBtn.style.display = 'block';
+            updateScore();
         });
     };
 
@@ -213,6 +249,9 @@ function manageGameboard(gameboard, gameController) {
             gamemodeBtn.style.display = 'none';
             playerForm.style.display = 'flex';
             gameController.setGamemode(1);
+            addRequired.forEach((node) => {
+                node.required = true;
+            })
         });
     }
 
@@ -222,13 +261,30 @@ function manageGameboard(gameboard, gameController) {
     }
 
     const getWinningText = (winningPosition) => {
+        if (winningPosition === 1) {
+            winnerText.textContent = 'It\'s a tie';
+            winnerContainer.style.display = 'block'
+            return;
+        }
+        const winnerName = gameController.getWinningPlayerByPosition(winningPosition);
         if (gameController.getGamemode() === 0) {
-            winnerText.textContent = `You won`;
+            if (winnerName === 'User') {
+                winnerText.textContent = `You won`;
+                gameController.setPlayerScore('User');
+            } else if (winnerName === 'Computer') {
+                winnerText.textContent = `You lost`;
+                gameController.setPlayerScore('Computer');
+            }
+            else
+                alert("Error");
         }
         else if (gameController.getGamemode() === 1) {
-            winnerText.textContent = `Game won by ${gameController.getWinningPlayerByPosition(winningPosition)}`;
+            const winner = gameController.getWinningPlayerByPosition(winningPosition);
+            winnerText.textContent = `Game won by ${winner}`;
+            gameController.setPlayerScore(winner);
         }
         winnerContainer.style.display = 'block'
+        updateScore();
     }
 
     const getWinner = () => {
@@ -243,7 +299,6 @@ function manageGameboard(gameboard, gameController) {
     const playRound = () => {
         let sw = 0;
 
-        // setUserChoice();
         getGamemodeSelection();
         getPlayerNames();
 
@@ -292,13 +347,15 @@ DE FACUT:
 -pus reset button si home button (sau next round si reset game - mai bine spus)
 -pus scor
 
+INAINTE DE FINAL COMMIT: 
+-redenumit functii care au nevoie pentru a fi mai explicit
+
 ERROR:
 
 -in one player: - sa se verifice prima data pozitiile de X dupa pozitiile de 0
                   sau sa se verifice la fiecare iteratie, nu la fiecare 2
                 - cred ca este rezolvat ^
                 
-                -cand mai e doar un patrat liber si pun X da eroare
-
--trebuie schimbat getWinningText - sa faca diferenta dintre You Won / Lost in one player
+                -cand mai e doar un patrat liber si pun X da eroare ?? dintr-o data nu mai da??
+                -trebuie verificat !!! ^
 */
