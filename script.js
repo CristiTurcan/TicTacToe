@@ -44,6 +44,7 @@ function createPlayer() {
     let score = 0;
 
     const incrementScore = () => { score++ };
+    const resetScore = () => { score = 0; }
     const getScore = () => score;
 
     const setName = (givenName) => {
@@ -58,11 +59,15 @@ function createPlayer() {
     };
     const getChoice = () => choice;
 
-    return { setName, getName, setChoice, getChoice, incrementScore, getScore };
+    return {
+        setName, getName, setChoice, getChoice,
+        incrementScore, getScore, resetScore
+    };
 }
 
 const gameController = (function (gameboard) {
     let gamemode;
+    let gameover;
 
     const player1 = createPlayer();
     const player2 = createPlayer();
@@ -149,8 +154,6 @@ const gameController = (function (gameboard) {
         }
     }
 
-    const setGamemode = (gm) => { gamemode = gm; }
-    const getGamemode = () => gamemode;
 
     const getPlayerChoice = (playerNo) => {
         if (playerNo === 1)
@@ -170,6 +173,11 @@ const gameController = (function (gameboard) {
             alert("Error in setPlayerScore - playerNo not good");
     }
 
+    const resetPlayersScore = () => {
+        player1.resetScore();
+        player2.resetScore();
+    }
+
     const getPlayerScore = (playerNo) => {
         if (playerNo === 1)
             return player1.getScore();
@@ -179,7 +187,17 @@ const gameController = (function (gameboard) {
             alert("Error in getPlayerScore - playerNo not good");
     }
 
-    return { createPlayers, checkResult, setGamemode, getGamemode, getPlayerChoice, getWinningPlayerByPosition, setPlayerScore, getPlayerScore };
+    const setGamemode = (gm) => { gamemode = gm; }
+    const getGamemode = () => gamemode;
+
+    const setGameover = () => { gameover = 1; }
+    const resetGameover = () => { gameover = 0; }
+    const getGameover = () => gameover;
+
+    return {
+        createPlayers, checkResult, getPlayerChoice, getWinningPlayerByPosition, setPlayerScore,
+        resetPlayersScore, getPlayerScore, setGamemode, getGamemode, setGameover, resetGameover, getGameover
+    };
 })(gameboard);
 
 
@@ -204,10 +222,14 @@ function manageGameboard(gameboard, gameController) {
     const homeBtn = document.querySelector('.homeBtn');
 
     let positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    let gameOver = 0;
 
     const updateScore = () => {
         scoreText.textContent = `${gameController.getPlayerScore(1)} - ${gameController.getPlayerScore(2)}`;
+    }
+
+    const resetScore = () => {
+        gameController.resetPlayersScore();
+        updateScore();
     }
 
     const insertChoiceInSquare = (pos, choice) => {
@@ -216,8 +238,33 @@ function manageGameboard(gameboard, gameController) {
         positions.splice(index, 1);
 
         gameboard.putChoice(pos, choice);
+        console.log(`positions = ${positions}`);
         squares[pos].textContent = gameboard.getChoice(pos);
     };
+
+    const resetGame = () => {
+        gameboard.resetBoard();
+        positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        for (i = 0; i < 9; i++) {
+            squares[i].textContent = gameboard.getChoice(i);
+        }
+    }
+
+    const nextRound = () => {
+        if (gameController.getGameover()) {
+            nextRoundBtn.addEventListener('click', () => {
+                gameController.resetGameover();
+                resetGame();
+            });
+        }
+    }
+
+    //easy method, might change it later :)
+    const goHome = () => {
+        homeBtn.addEventListener('click', () => {
+            location.reload();
+        });
+    }
 
     const setUserChoice = (choice) => {
         gameController.createPlayers(player1Name.value, player2Name.value, choice);
@@ -289,7 +336,8 @@ function manageGameboard(gameboard, gameController) {
 
     const getWinner = () => {
         if ((winningPosition = gameController.checkResult()) !== 0) {
-            gameOver = 1;
+            gameController.setGameover();
+            nextRound();
             getWinningText(winningPosition);
             return 1;
         }
@@ -301,11 +349,13 @@ function manageGameboard(gameboard, gameController) {
 
         getGamemodeSelection();
         getPlayerNames();
+        goHome();
 
         squares.forEach((square) => {
             square.addEventListener('click', (e) => {
-                //if game over -> can't fill squares anymore
-                if (gameOver) return;
+                if (gameController.getGameover()) {
+                    return;
+                };
 
                 pos = e.target.dataset.number;
                 // if square is filled you can't override it
@@ -345,7 +395,7 @@ mg.playRound();
 DE FACUT:
 
 -pus reset button si home button (sau next round si reset game - mai bine spus)
--pus scor
+-fiecare runda incepe cu X
 
 INAINTE DE FINAL COMMIT: 
 -redenumit functii care au nevoie pentru a fi mai explicit
