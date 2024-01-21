@@ -348,10 +348,12 @@ function manageGameboard(gameboard, gameController) {
             gameController.setGameover();
             nextRoundBtn.addEventListener('click', nextRound);
             getWinningText(winningPosition[2]);
-            for (i = 0; i < winningPosition.length; i++) {
-                squares[winningPosition[i]].classList.add('highlightWinningSquare');
+            if (winningPosition[2] !== 1) {
+                for (i = 0; i < winningPosition.length; i++) {
+                    squares[winningPosition[i]].classList.add('highlightWinningSquare');
+                }
+                return 1;
             }
-            return 1;
         }
         return 0;
     }
