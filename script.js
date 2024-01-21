@@ -121,33 +121,33 @@ const gameController = (function (gameboard) {
     const checkResult = () => {
         if (compareThreePositions(0, 1, 2)) {
             console.log(`Game won by 1 ${getWinningPlayerNameByPosition(2)}`);
-            return 2;
+            return [0, 1, 2];
         } else if (compareThreePositions(0, 3, 6)) {
             console.log(`Game won by 2 ${getWinningPlayerNameByPosition(6)}`);
-            return 6;
+            return [0, 3, 6];
         } else if (compareThreePositions(0, 4, 8)) {
             console.log(`Game won by 3 ${getWinningPlayerNameByPosition(8)}`);
-            return 8;
+            return [0, 4, 8];
         } else if (compareThreePositions(1, 4, 7)) {
             console.log(`Game won by 4 ${getWinningPlayerNameByPosition(7)}`);
-            return 7;
+            return [1, 4, 7];
         } else if (compareThreePositions(2, 4, 6)) {
             console.log(`Game won by 5 ${getWinningPlayerNameByPosition(6)}`);
-            return 6;
+            return [2, 4, 6];
         } else if (compareThreePositions(2, 5, 8)) {
             console.log(`Game won by 6 ${getWinningPlayerNameByPosition(8)}`);
-            return 8;
+            return [2, 5, 8];
         } else if (compareThreePositions(3, 4, 5)) {
             console.log(`Game won by 7 ${getWinningPlayerNameByPosition(5)}`);
-            return 5;
+            return [3, 4, 5];
         } else if (compareThreePositions(6, 7, 8)) {
             console.log(`Game won by 8 ${getWinningPlayerNameByPosition(8)}`);
-            return 8;
+            return [6, 7, 8];
         } else if (gameboard.filledBoard()) {
             console.log("It's a tie");
-            return 1;
+            return [1, 1, 1];
         } else {
-            return 0;
+            return [0, 0, 0];
         }
     }
 
@@ -247,8 +247,12 @@ function manageGameboard(gameboard, gameController) {
 
     const nextRound = () => {
         gameController.resetGameover();
-        winnerContainer.style.display = 'none';
+        winnerText.style.visibility = 'hidden';
         resetGame();
+
+        squares.forEach((square) => {
+            square.classList.remove('highlightWinningSquare');
+        })
 
         //if Computer sign is X then computer starts next round
         if ((gameController.getGamemode() === 0) && (gameController.getPlayerChoice(0) === '0')) {
@@ -278,7 +282,7 @@ function manageGameboard(gameboard, gameController) {
             }
 
             playerFormContainer.style.display = 'none';
-            score.style.display = 'block';
+            scoreText.style.visibility = 'visible';
             actionBtn.style.display = 'block';
             updateScore();
         });
@@ -287,7 +291,7 @@ function manageGameboard(gameboard, gameController) {
     const getGamemodeSelection = () => {
         onePlayer.addEventListener('click', () => {
             gamemodeBtn.style.display = 'none';
-            playerForm.style.display = 'flex';
+            playerForm.style.display = 'block';
             //no names needed for one player
             inputContainer.forEach((node) => {
                 node.style.display = 'none';
@@ -297,7 +301,7 @@ function manageGameboard(gameboard, gameController) {
         });
         twoPlayer.addEventListener('click', () => {
             gamemodeBtn.style.display = 'none';
-            playerForm.style.display = 'flex';
+            playerForm.style.display = 'block';
             gameController.setGamemode(1);
             addRequired.forEach((node) => {
                 node.required = true;
@@ -313,7 +317,7 @@ function manageGameboard(gameboard, gameController) {
     const getWinningText = (winningPosition) => {
         if (winningPosition === 1) {
             winnerText.textContent = 'It\'s a tie';
-            winnerContainer.style.display = 'block'
+            winnerText.style.visibility = 'visible';
             return;
         }
 
@@ -333,15 +337,20 @@ function manageGameboard(gameboard, gameController) {
             winnerText.textContent = `Game won by ${winnerName}`;
             gameController.setPlayerScoreByName(winnerName);
         }
-        winnerContainer.style.display = 'block'
+        winnerText.style.visibility = 'visible';
         updateScore();
     }
 
     const getWinner = () => {
-        if ((winningPosition = gameController.checkResult()) !== 0) {
+        winningPosition = gameController.checkResult();
+
+        if (winningPosition[2] !== 0) {
             gameController.setGameover();
             nextRoundBtn.addEventListener('click', nextRound);
-            getWinningText(winningPosition);
+            getWinningText(winningPosition[2]);
+            for (i = 0; i < winningPosition.length; i++) {
+                squares[winningPosition[i]].classList.add('highlightWinningSquare');
+            }
             return 1;
         }
         return 0;
@@ -353,7 +362,7 @@ function manageGameboard(gameboard, gameController) {
         getGamemodeSelection();
         setPlayerNames();
         goHome();
-        
+
         squares.forEach((square) => {
             square.addEventListener('click', (e) => {
                 nextRoundBtn.removeEventListener('click', nextRound);

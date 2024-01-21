@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
     <title>TicTacToe</title>
@@ -11,7 +14,8 @@
 
 <body>
     <div class="container">
-        <div class="score"><span class="scoreText"></span></div>
+        <div class="title">Tic Tac Toe</div>
+        <div class="score"><span class="scoreText">0 - 0</span></div>
         <div class="gameboard">
             <div class="square" data-number="0"></div>
             <div class="square" data-number="1"></div>
@@ -23,6 +27,7 @@
             <div class="square" data-number="7"></div>
             <div class="square" data-number="8"></div>
         </div>
+        <div class="winnerContainer"><span class="winnerText"></span></div>
         <div class="gamemode">
             <button class="one-player">1 player</button>
             <button class="two-player">2 player</button>
@@ -31,18 +36,19 @@
             <form id="playerForm">
                 <div class="inputContainer">
                     <label for="player1"></label>
-                    <input class="addRequired" type="text" id="player1" name="player1" placeholder="Enter player 1 name">
+                    <input class="addRequired" type="text" id="player1" name="player1"
+                        placeholder="Enter player 1 name">
                     <label for="player2"></label>
-                    <input class="addRequired" type="text" id="player2" name="player2" placeholder="Enter player 2 name">
+                    <input class="addRequired" type="text" id="player2" name="player2"
+                        placeholder="Enter player 2 name">
                 </div>
 
-                <div class="permChoiceBtn">
+                <div class="choiceBtn">
                     <input type="submit" value="X">
                     <input type="submit" value="0">
                 </div>
             </form>
         </div>
-        <div class="winnerContainer"><span class="winnerText"></span></div>
         <div class="actionBtn">
             <button class="nextRoundBtn">Next Round</button>
             <button class="homeBtn">Home</button>
